@@ -1,12 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import EstudianteView from '@/views/EstudianteView.vue'
+import LoginView from '@/views/LoginView.vue'
+
+function estaAutenticado(){
+  let resul=localStorage.getItem('auth')==='true';
+  console.log(resul);
+  return resul;
+}
 
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: {
+      requiereAutenticacion: true,//protegiga
+    }
   },
   {
     path: '/estudiante',
@@ -14,18 +24,29 @@ const routes = [
     component: EstudianteView
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/login',
+    name: 'login',
+    component: LoginView
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-
+router.beforeEach((to, from, next) => {
+  console.log('antes')
+  if (to.meta.requiereAutenticacion) {
+    console.log('Auth')
+    //Si no esta autenticado
+    if (!estaAutenticado()) {
+      console.log('exito')
+      next('/login')
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+})
 export default router

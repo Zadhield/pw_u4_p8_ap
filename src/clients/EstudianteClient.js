@@ -39,7 +39,6 @@ const consultarTodos = async () => {
     return respuesta;
 };
 
-
 //Fachada
 export const guardarFachada = async (body) => {
     await guardar(body);
